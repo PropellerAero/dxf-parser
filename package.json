@@ -1,5 +1,5 @@
 {
-  "name": "dxf-parser",
+  "name": "@propelleraero/dxf-parser",
   "version": "0.6.1",
   "description": "Parse dxf files into a readable, logical js object.",
   "main": "index.js",
@@ -27,7 +27,7 @@
     "should": "^6.0.1"
   },
   "dependencies": {
-    "loglevel": "^1.2.0"
+    "loglevel": "^1.6.0"
   },
   "keywords": [
     "dxf",
