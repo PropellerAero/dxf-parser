@@ -27,6 +27,7 @@
   "devDependencies": {
     "approvals": "^2.1.2",
     "browserify": "^11.0.1",
+    "mocha": "^6.1.4",
     "should": "^6.0.1"
   },
   "dependencies": {
