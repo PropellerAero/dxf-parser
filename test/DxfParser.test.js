@@ -18,6 +18,18 @@ describe('Parser', function() {
 		});
 	});
 
+	it('should parse the dxf extrusions correctly', function(done) {
+		var file = fs.createReadStream(__dirname + '/data/extrusion.dxf', { encoding: 'utf8' });
+		var parser = new DxfParser();
+
+		parser.parseStream(file, function(err, result) {
+			should.not.exist(err);
+			var expected = fs.readFileSync(__dirname + '/data/extrusion.parser.out', {encoding: 'utf8'});
+			result.should.eql(JSON.parse(expected));
+			done();
+		});
+	});
+
 	var tables;
 
 	it('should parse the tables section without error', function(done) {

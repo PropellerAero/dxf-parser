@@ -1478,13 +1478,7 @@ EntityParser.prototype.parseEntity = function(scanner, curr) {
             case 100:
                 break;
             case 210:
-                entity.extrusionDirectionX = curr.value;
-                break;
-            case 220:
-                entity.extrusionDirectionY = curr.value;
-                break;
-            case 230:
-                entity.extrusionDirectionZ = curr.value;
+                entity.extrusionDirection = helpers.parsePoint(scanner);
                 break;
             default:
                 helpers.checkCommonEntityProperties(entity, curr);
@@ -1773,13 +1767,7 @@ EntityParser.prototype.parseEntity = function(scanner, curr) {
                 if(curr.value !== 0) entity.width = curr.value;
                 break;
             case 210:
-                entity.extrusionDirectionX = curr.value;
-                break;
-            case 220:
-                entity.extrusionDirectionY = curr.value;
-                break;
-            case 230:
-                entity.extrusionDirectionZ = curr.value;
+                entity.extrusionDirection = helpers.parsePoint(scanner);
                 break;
             default:
                 helpers.checkCommonEntityProperties(entity, curr);
@@ -1975,7 +1963,7 @@ EntityParser.prototype.parseEntity = function(scanner, curr) {
 				case 75: // Curves and smooth surface type
 					break;
 				case 210:
-                    extrusionDirection = helpers.parsePoint(scanner);
+                    entity.extrusionDirection = helpers.parsePoint(scanner);
 					break;
 				default:
 					helpers.checkCommonEntityProperties(entity, curr);
