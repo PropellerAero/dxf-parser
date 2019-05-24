@@ -4,8 +4,11 @@
   "description": "Parse dxf files into a readable, logical js object.",
   "main": "index.js",
   "scripts": {
+    "build": "yarn browserify",
     "browserify": "node scripts/browserify",
-    "test": "mocha test"
+    "test": "mocha test",
+    "codeship:decrypt": "./deployment/crypto.sh decrypt ./deployment/encrypted ./deployment/secrets",
+    "codeship:encrypt": "./deployment/crypto.sh encrypt ./deployment/secrets ./deployment/encrypted"
   },
   "repository": {
     "type": "git",
@@ -24,6 +27,7 @@
   "devDependencies": {
     "approvals": "^2.1.2",
     "browserify": "^11.0.1",
+    "mocha": "^6.1.4",
     "should": "^6.0.1"
   },
   "dependencies": {

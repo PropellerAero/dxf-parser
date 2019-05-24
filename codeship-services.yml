@@ -1,0 +1,5 @@
+package:
+  encrypted_env_file: deployment/encrypted/env.sec
+  build:
+    dockerfile: deployment/Dockerfile
+    encrypted_args_file: deployment/encrypted/args.sec

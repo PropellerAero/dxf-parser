@@ -1,0 +1,14 @@
+- name: test
+  service: package
+  command: yarn test
+
+- name: build
+  service: package
+  command: yarn build
+  
+- name: npm_publish
+  type: serial
+  tag: master
+  service: package
+  steps:
+  - command: ./deployment/publish.sh
