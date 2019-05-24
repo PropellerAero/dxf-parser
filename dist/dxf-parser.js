@@ -1189,9 +1189,10 @@ exports.parsePoint = function(scanner) {
 
     code += 10;
     curr = scanner.next();
-    if(curr.code != code)
+    if(curr.code != code) {
         throw new Error('Expected code for point value to be ' + code +
         ' but got ' + curr.code + '.');
+    }
     point.y = curr.value;
 
     code += 10;
@@ -1619,6 +1620,9 @@ EntityParser.prototype.parseEntity = function(scanner, curr) {
             case 2:
                 entity.name = curr.value;
                 break;
+            case 210:
+                entity.extrusionDirection = helpers.parsePoint(scanner);
+                break;
             default: // check common entity attributes
                 helpers.checkCommonEntityProperties(entity, curr);
                 break;
@@ -1819,6 +1823,8 @@ function parseLWPolylineVertices(n, scanner) {
                     if (vertexIsStarted) {
                         vertices.push(vertex);
                     }
+                    // Remind to allow upper switch to handle code on next step
+                    scanner.rewind()
                     return vertices;
             }
             curr = scanner.next();
@@ -1872,6 +1878,9 @@ EntityParser.prototype.parseEntity = function(scanner, curr) {
                 break;
             case 72:
                 entity.drawingDirection = curr.value;
+                break;
+            case 210:
+                entity.extrusionDirection = helpers.parsePoint(scanner);
                 break;
             default:
                 helpers.checkCommonEntityProperties(entity, curr);
@@ -2164,6 +2173,9 @@ EntityParser.prototype.parseEntity = function(scanner, curr) {
                 break;
             case 73: // Vertical alignment
                 entity.valign = curr.value;
+                break;
+            case 210:
+                entity.extrusionDirection = helpers.parsePoint(scanner);
                 break;
             default: // check common entity attributes
                 helpers.checkCommonEntityProperties(entity, curr);
