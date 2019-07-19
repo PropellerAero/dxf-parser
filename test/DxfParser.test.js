@@ -176,6 +176,10 @@ describe('Parser', function() {
 	it('should parse ARC entities (1)', function() {
 		verifyDxf(path.join(__dirname, 'data', 'arc1.dxf'));
 	});
+
+	it('should parse MESH entities', function() {
+		verifyDxf(path.join(__dirname, 'data', 'mesh.dxf'));
+	});
 });
 
 function verifyDxf(sourceFilePath) {
