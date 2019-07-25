@@ -179,6 +179,7 @@ describe('Parser', function() {
 
 	it('should parse MESH entities', function() {
 		verifyDxf(path.join(__dirname, 'data', 'mesh.dxf'));
+		verifyDxf(path.join(__dirname, 'data', 'mesh2.dxf'));
 	});
 });
 
