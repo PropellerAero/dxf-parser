@@ -1,12 +1,14 @@
 /* eslint-disable no-underscore-dangle */
 import es, { MapStream } from 'event-stream';
 import { Readable } from 'stream';
-import DxfArrayScanner from './DxfArrayScanner';
+import DxfArrayScanner, { IDxfScanner } from './DxfArrayScanner';
 
 const LINE_DATA_EVENT = 'line-data';
 const BUFFERED_EVENT = 'buffered';
 
-export default class DxfStreamScanner extends DxfArrayScanner {
+export default class DxfStreamScanner
+    extends DxfArrayScanner
+    implements IDxfScanner {
     _data: Array<string>;
     _pointer: number;
     ended: boolean;

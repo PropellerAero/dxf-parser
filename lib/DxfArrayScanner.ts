@@ -47,6 +47,16 @@ function parseGroupValue(code: number, value: string) {
     return value;
 }
 
+export interface IDxfScanner {
+    next: () => Promise<Group>;
+    peek: () => Promise<Group>;
+    rewind: () => void;
+    hasNext: () => Promise<boolean>;
+    getDataLength: () => number;
+    isEOF: () => boolean;
+    lastReadGroup?: Group;
+}
+
 /**
  * DxfArrayScanner
  *
@@ -58,7 +68,7 @@ function parseGroupValue(code: number, value: string) {
  * @param data - an array where each element represents a line in the dxf file
  * @constructor
  */
-export default class DxfArrayScanner {
+export default class DxfArrayScanner implements IDxfScanner {
     _pointer: number;
     _data: Array<string>;
     _eof: boolean;

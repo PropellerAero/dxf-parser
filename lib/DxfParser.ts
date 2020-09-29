@@ -15,6 +15,23 @@ import {
     Table,
     Viewport,
 } from './types';
+import FaceEntityHandler from './entities/3dface';
+import ArcEntityHandler from './entities/arc';
+import AttDefEntityHandler from './entities/attdef';
+import CircleEntityHandler from './entities/circle';
+import DimensionEntityHandler from './entities/dimension';
+import EllipseEntityHandler from './entities/ellipse';
+import InsertEntityHandler from './entities/insert';
+import LineEntityHandler from './entities/line';
+import LWpolylineEntityHandler from './entities/lwpolyline';
+import MTextEntityHandler from './entities/mtext';
+import PointEntityHandler from './entities/point';
+import PolylineEntityHandler from './entities/polyline';
+import SolidEntityHandler from './entities/solid';
+import SplineEntityHandler from './entities/spline';
+import TextEntityHandler from './entities/text';
+import MeshEntityHandler from './entities/mesh';
+import EntityHandler, { IEntityHandler } from './EntityHandler';
 
 //log.setLevel('trace');
 //log.setLevel('debug');
@@ -25,22 +42,22 @@ log.setLevel('error');
 
 function registerDefaultEntityHandlers(dxfParser: DxfParser) {
     // Supported entities here (some entity code is still being refactored into this flow)
-    dxfParser.registerEntityHandler(require('./entities/3dface'));
-    dxfParser.registerEntityHandler(require('./entities/arc'));
-    dxfParser.registerEntityHandler(require('./entities/attdef'));
-    dxfParser.registerEntityHandler(require('./entities/circle'));
-    dxfParser.registerEntityHandler(require('./entities/dimension'));
-    dxfParser.registerEntityHandler(require('./entities/ellipse'));
-    dxfParser.registerEntityHandler(require('./entities/insert'));
-    dxfParser.registerEntityHandler(require('./entities/line'));
-    dxfParser.registerEntityHandler(require('./entities/lwpolyline'));
-    dxfParser.registerEntityHandler(require('./entities/mtext'));
-    dxfParser.registerEntityHandler(require('./entities/point'));
-    dxfParser.registerEntityHandler(require('./entities/polyline'));
-    dxfParser.registerEntityHandler(require('./entities/solid'));
-    dxfParser.registerEntityHandler(require('./entities/spline'));
-    dxfParser.registerEntityHandler(require('./entities/text'));
-    dxfParser.registerEntityHandler(require('./entities/mesh'));
+    dxfParser.registerEntityHandler(FaceEntityHandler);
+    dxfParser.registerEntityHandler(ArcEntityHandler);
+    dxfParser.registerEntityHandler(AttDefEntityHandler);
+    dxfParser.registerEntityHandler(CircleEntityHandler);
+    dxfParser.registerEntityHandler(DimensionEntityHandler);
+    dxfParser.registerEntityHandler(EllipseEntityHandler);
+    dxfParser.registerEntityHandler(InsertEntityHandler);
+    dxfParser.registerEntityHandler(LineEntityHandler);
+    dxfParser.registerEntityHandler(LWpolylineEntityHandler);
+    dxfParser.registerEntityHandler(MTextEntityHandler);
+    dxfParser.registerEntityHandler(PointEntityHandler);
+    dxfParser.registerEntityHandler(PolylineEntityHandler);
+    dxfParser.registerEntityHandler(SolidEntityHandler);
+    dxfParser.registerEntityHandler(SplineEntityHandler);
+    dxfParser.registerEntityHandler(TextEntityHandler);
+    dxfParser.registerEntityHandler(MeshEntityHandler);
     //dxfParser.registerEntityHandler(require('./entities/vertex'));
 }
 
@@ -59,8 +76,10 @@ export default class DxfParser {
         registerDefaultEntityHandlers(this);
     }
 
-    registerEntityHandler(handlerType) {
-        var instance = new handlerType();
+    registerEntityHandler<T extends EntityHandler>(
+        handlerType: IEntityHandler<T>
+    ) {
+        const instance = new handlerType();
         this._entityHandlers[handlerType.ForEntityName] = instance;
     }
 
