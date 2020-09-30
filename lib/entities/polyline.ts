@@ -2,7 +2,7 @@ import { IDxfScanner } from '../DxfArrayScanner';
 import EntityHandler from '../EntityHandler';
 import * as helpers from '../ParseHelpers';
 import { BaseEntity, EntityTypes, Group, PolylineEntity } from '../types';
-var VertexParser = require('./vertex');
+import VertexParser from './vertex';
 
 export default class EntityParser implements EntityHandler {
     static ForEntityName = EntityTypes.POLYLINE;
@@ -68,7 +68,7 @@ async function parsePolylineVertices(scanner: IDxfScanner, curr: Group) {
     while (!scanner.isEOF()) {
         if (curr.code === 0) {
             if (curr.value === EntityTypes.VERTEX) {
-                vertices.push(await vertexParser.parseEntity(scanner, curr));
+                vertices.push(await vertexParser.parseEntity(scanner));
                 curr = scanner.lastReadGroup;
             } else if (curr.value === 'SEQEND') {
                 parseSeqEnd(scanner, curr);

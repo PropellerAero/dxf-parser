@@ -52,7 +52,6 @@ export interface IDxfScanner {
     peek: () => Promise<Group>;
     rewind: () => void;
     hasNext: () => Promise<boolean>;
-    getDataLength: () => number;
     isEOF: () => boolean;
     lastReadGroup?: Group;
 }
@@ -85,7 +84,7 @@ export default class DxfArrayScanner implements IDxfScanner {
      * in the array. The first is the code, the second is the value.
      */
     async next() {
-        if (!this.hasNext()) {
+        if (!(await this.hasNext())) {
             if (!this._eof)
                 throw new Error(
                     'Unexpected end of input: EOF group not read before end of file. Ended on code ' +
@@ -113,12 +112,11 @@ export default class DxfArrayScanner implements IDxfScanner {
         if (group.code === 0 && group.value === 'EOF') this._eof = true;
 
         this.lastReadGroup = group;
-
         return group;
     }
 
     async peek() {
-        if (!this.hasNext()) {
+        if (!(await this.hasNext())) {
             if (!this._eof)
                 throw new Error(
                     'Unexpected end of input: EOF group not read before end of file. Ended on code ' +
@@ -156,14 +154,10 @@ export default class DxfArrayScanner implements IDxfScanner {
         }
 
         // We need to be sure there are two lines available
-        if (this._pointer > -2) {
+        if (this._pointer - this._data.length > -2) {
             return false;
         }
         return true;
-    }
-
-    getDataLength() {
-        return this._data.length;
     }
 
     /**

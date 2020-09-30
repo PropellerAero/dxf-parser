@@ -1,4 +1,3 @@
-import log from 'loglevel';
 import { Readable } from 'stream';
 import DxfStreamScanner from './DxfStreamScanner';
 import AUTO_CAD_COLOR_INDEX from './AutoCadColorIndex';
@@ -32,13 +31,15 @@ import SplineEntityHandler from './entities/spline';
 import TextEntityHandler from './entities/text';
 import MeshEntityHandler from './entities/mesh';
 import EntityHandler, { IEntityHandler } from './EntityHandler';
+import DxfArrayScanner, { IDxfScanner } from './DxfArrayScanner';
+import * as log from 'loglevel';
 
 //log.setLevel('trace');
-//log.setLevel('debug');
-//log.setLevel('info');
+// log.setLevel('debug');
+// log.setLevel('info');
 //log.setLevel('warn');
-log.setLevel('error');
-//log.setLevel('silent');
+// log.setLevel('error');
+log.setLevel('silent');
 
 function registerDefaultEntityHandlers(dxfParser: DxfParser) {
     // Supported entities here (some entity code is still being refactored into this flow)
@@ -67,10 +68,14 @@ function isPoint(value: unknown): value is Point {
     }
 }
 
-type DoneCallback = (error?: Error, dxf?: DXF) => void;
-
 export default class DxfParser {
     _entityHandlers: Record<string, any> = {};
+
+    promise = new Promise(resolve => {
+        this.resolve = resolve;
+    });
+
+    resolve: (dxf: DXF) => void;
 
     constructor() {
         registerDefaultEntityHandlers(this);
@@ -83,28 +88,25 @@ export default class DxfParser {
         this._entityHandlers[handlerType.ForEntityName] = instance;
     }
 
-    parseString(source: string, done: DoneCallback) {
+    parseString(source: string) {
         if (typeof source === 'string') {
-            return this._parse(Readable.from(source.split(/\r?\n/)), done);
+            return this._parse(new DxfArrayScanner(source.split(/\r?\n/)));
         } else {
             console.error('Cannot read dxf source of type `' + typeof source);
             return null;
         }
     }
 
-    parseStream(stream: Readable, done: () => void) {
-        this._parse(stream, done);
+    parseStream(stream: Readable) {
+        return this._parse(new DxfStreamScanner(stream));
     }
 
-    _parse(stream: Readable, done: DoneCallback) {
+    async _parse(scanner: IDxfScanner) {
         const dxf: DXF = {};
-        let curr: Group | null = null;
+        let curr: Group;
         let lastHandle = 0;
-        const scanner = new DxfStreamScanner(stream);
 
-        // if (!scanner.hasNext()) throw Error('Empty file');
-
-        // const self = this;
+        if (!(await scanner.hasNext())) throw Error('Empty file');
 
         const parseAll = async () => {
             try {
@@ -149,9 +151,10 @@ export default class DxfParser {
                     }
                     // If is a new section
                 }
-                done(null, dxf);
+                return dxf;
+                // this.resolve(dxf);
             } catch (e) {
-                done(e);
+                throw e;
             }
         };
 
@@ -199,7 +202,7 @@ export default class DxfParser {
         /**
          *
          */
-        var parseBlocks = async function () {
+        const parseBlocks = async function () {
             const blocks: Record<string, Block> = {};
             curr = await scanner.next();
 
@@ -228,8 +231,8 @@ export default class DxfParser {
             return blocks;
         };
 
-        var parseBlock = async () => {
-            var block: Block = {};
+        const parseBlock = async () => {
+            const block: Block = {};
 
             curr = await scanner.next();
 
@@ -314,7 +317,7 @@ export default class DxfParser {
                 if (groupIs(0, 'TABLE')) {
                     curr = await scanner.next();
 
-                    var tableDefinition =
+                    const tableDefinition =
                         tableDefinitions[curr.value as string];
                     if (tableDefinition) {
                         log.debug(curr.value + ' Table {');
@@ -335,7 +338,7 @@ export default class DxfParser {
 
         const END_OF_TABLE_VALUE = 'ENDTAB';
 
-        var parseTable = async function () {
+        const parseTable = async function () {
             const tableDefinition = tableDefinitions[curr.value as string];
             const table: Table = {};
             let expectedCount = 0;
@@ -368,7 +371,7 @@ export default class DxfParser {
                         if (curr.value === tableDefinition.dxfSymbolName) {
                             table[
                                 tableDefinition.tableRecordsProperty
-                            ] = tableDefinition.parseTableRecords();
+                            ] = await tableDefinition.parseTableRecords();
                         } else {
                             logUnhandledGroup(curr);
                             curr = await scanner.next();
@@ -379,7 +382,7 @@ export default class DxfParser {
                         curr = await scanner.next();
                 }
             }
-            var tableRecords = table[tableDefinition.tableRecordsProperty];
+            const tableRecords = table[tableDefinition.tableRecordsProperty];
             if (tableRecords) {
                 if (tableRecords.constructor === Array) {
                     actualCount = tableRecords.length;
@@ -666,7 +669,7 @@ export default class DxfParser {
         const parseEntities = async (forBlock?: boolean) => {
             const entities: Array<Entity> = [];
 
-            var endingOnValue = forBlock ? 'ENDBLK' : 'ENDSEC';
+            const endingOnValue = forBlock ? 'ENDBLK' : 'ENDSEC';
 
             if (!forBlock) {
                 curr = await scanner.next();
@@ -678,10 +681,10 @@ export default class DxfParser {
                     }
 
                     let entity: Entity;
-                    var handler = this._entityHandlers[curr.value as string];
+                    const handler = this._entityHandlers[curr.value as string];
                     if (handler != null) {
                         log.debug(curr.value + ' {');
-                        entity = handler.parseEntity(scanner, curr);
+                        entity = await handler.parseEntity(scanner, curr);
                         curr = scanner.lastReadGroup;
                         log.debug('}');
                     } else {
@@ -736,14 +739,14 @@ export default class DxfParser {
             return point;
         }
 
-        var ensureHandle = function (entity) {
+        const ensureHandle = function (entity) {
             if (!entity)
                 throw new TypeError('entity cannot be undefined or null');
 
             if (!entity.handle) entity.handle = lastHandle++;
         };
 
-        parseAll();
+        return parseAll();
     }
 }
 
