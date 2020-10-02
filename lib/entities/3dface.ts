@@ -31,8 +31,9 @@ export default class EntityParser implements EntityHandler {
     }
 }
 
-async function parse3dFaceVertices(scanner: IDxfScanner, curr: Group) {
+async function parse3dFaceVertices(scanner: IDxfScanner, group: Group) {
     const vertices: Array<Point> = [];
+    let curr = group;
     let vertexIsStarted = false;
     let vertexIsFinished = false;
     let verticesPer3dFace = 4; // there can be up to four vertices per face, although 3 is most used for TIN

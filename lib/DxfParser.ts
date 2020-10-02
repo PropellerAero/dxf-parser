@@ -30,6 +30,7 @@ import SolidEntityHandler from './entities/solid';
 import SplineEntityHandler from './entities/spline';
 import TextEntityHandler from './entities/text';
 import MeshEntityHandler from './entities/mesh';
+// import VertexEntityHandler from './entities/vertex';
 import EntityHandler, { IEntityHandler } from './EntityHandler';
 import DxfArrayScanner, { IDxfScanner } from './DxfArrayScanner';
 import * as log from 'loglevel';
@@ -59,7 +60,7 @@ function registerDefaultEntityHandlers(dxfParser: DxfParser) {
     dxfParser.registerEntityHandler(SplineEntityHandler);
     dxfParser.registerEntityHandler(TextEntityHandler);
     dxfParser.registerEntityHandler(MeshEntityHandler);
-    //dxfParser.registerEntityHandler(require('./entities/vertex'));
+    // dxfParser.registerEntityHandler(VertexEntityHandler);
 }
 
 function isPoint(value: unknown): value is Point {

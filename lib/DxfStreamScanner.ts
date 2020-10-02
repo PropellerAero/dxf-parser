@@ -60,7 +60,7 @@ export default class DxfStreamScanner
             }
 
             const bufferedLines = this._data.length - index;
-            log.info('Buffer Size', index, this._data.length, bufferedLines);
+            log.debug('Buffer Size', index, this._data.length, bufferedLines);
 
             if (bufferedLines >= this.upperBuffer) {
                 if (!this.stream.isPaused()) {
@@ -79,12 +79,6 @@ export default class DxfStreamScanner
                 resolve();
                 return;
             }
-
-            // if (bufferedLines < this.lowerBuffer) {
-            //     log.info('Resume Stream');
-            //     // this.stream.resume();
-            //     this.resumeData();
-            // }
 
             log.info(`Buffering to ${index} from ${this._data.length}`);
             const onData = () => {
@@ -105,13 +99,13 @@ export default class DxfStreamScanner
     }
 
     async next() {
-        log.info('Next', this._pointer, this._data.length, this.lastReadGroup);
+        log.debug('Next', this._pointer, this._data.length, this.lastReadGroup);
         await this.bufferToIndex(this._pointer + 1);
         return super.next();
     }
 
     async peek() {
-        log.info('Peek', this._pointer, this._data.length);
+        log.debug('Peek', this._pointer, this._data.length);
         await this.bufferToIndex(this._pointer + 1);
         return super.peek();
     }

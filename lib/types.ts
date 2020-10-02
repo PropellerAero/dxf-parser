@@ -306,7 +306,7 @@ export enum EntityTypes {
     CIRCLE = 'CIRCLE',
     DIMENSION = 'DIMENSION',
     ELLIPSE = 'ELLIPSE',
-    FACE = 'FACE',
+    FACE = '3DFACE',
     INSERT = 'INSERT',
     LINE = 'LINE',
     LWPOLYLINE = 'LWPOLYLINE',
