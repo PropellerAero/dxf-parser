@@ -1,4 +1,4 @@
-FROM node:carbon
+FROM node:10
 
 ARG NPM_TOKEN
 
