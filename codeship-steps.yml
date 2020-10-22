@@ -6,9 +6,7 @@
   service: package
   command: yarn build
   
-- name: npm_publish
-  type: serial
+- name: Publish
   tag: master
-  service: package
-  steps:
-  - command: ./deployment/publish.sh
+  service: publisher
+  command: publish-javascript-package
